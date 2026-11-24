@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>BLACKSTRINGS</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            background-color: #0b141a;
+            color: #e9edef;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100dvh;
+            width: 100%;
+            background-color: #0b141a;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background-color: #202c33;
+            border-bottom: 1px solid #2a3942;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-title {
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+            color: #e9edef;
+        }
+
+        .brand-sub {
+            font-size: 11px;
+            color: #8696a0;
+            margin-top: 2px;
+        }
+
+        .tor-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tor-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            background-color: #111b21;
+            color: #8696a0;
+            border: 1px solid #2a3942;
+        }
+
+        .tor-badge.connecting {
+            color: #f59e0b;
+            border-color: #f59e0b55;
+        }
+
+        .tor-badge.connected {
+            color: #00a884;
+            border-color: #00a88455;
+        }
+
+        .tor-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #8696a0;
+        }
+
+        .tor-badge.connecting .tor-dot {
+            background-color: #f59e0b;
+        }
+
+        .tor-badge.connected .tor-dot {
+            background-color: #00a884;
+        }
+
+        .btn-tor {
+            background-color: #00a884;
+            color: #0b141a;
+            border: none;
+            border-radius: 8px;
+            padding: 7px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-tor:disabled {
+            opacity: 0.55;
+            cursor: default;
+        }
+
+        .onion-box {
+            background-color: #111b21;
+            border-bottom: 1px solid #2a3942;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .my-onion-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            background-color: #202c33;
+            padding: 8px 10px;
+            border-radius: 8px;
+        }
+
+        .onion-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #00a884;
+            letter-spacing: 0.7px;
+            flex-shrink: 0;
+        }
+
+        .my-onion-value {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 11px;
+            color: #d1d7db;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .btn-copy {
+            background-color: #2a3942;
+            color: #e9edef;
+            border: none;
+            border-radius: 6px;
+            padding: 5px 9px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .friend-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .friend-input {
+            flex: 1;
+            background-color: #202c33;
+            color: #e9edef;
+            border: 1px solid #2a3942;
+            border-radius: 8px;
+            padding: 9px 11px;
+            font-size: 12px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            outline: none;
+        }
+
+        .friend-input:focus {
+            border-color: #00a884;
+        }
+
+        .btn-connect {
+            background-color: #00a884;
+            color: #0b141a;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-connect:disabled {
+            opacity: 0.55;
+        }
+
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background-color: #0b141a;
+            background-image: radial-gradient(#182229 1px, transparent 1px);
+            background-size: 18px 18px;
+        }
+
+        .system-msg {
+            align-self: center;
+            background-color: #182229;
+            color: #8696a0;
+            font-size: 11px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            max-width: 90%;
+            text-align: center;
+            word-break: break-word;
+        }
+
+        .system-msg.error {
+            background-color: #3b171b;
+            color: #fca5a5;
+            border: 1px solid #7f1d1d;
+        }
+
+        .msg-bubble {
+            max-width: 82%;
+            padding: 8px 11px 6px 11px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .msg-sent {
+            align-self: flex-end;
+            background-color: #005c4b;
+            color: #e9edef;
+            border-top-right-radius: 2px;
+        }
+
+        .msg-received {
+            align-self: flex-start;
+            background-color: #202c33;
+            color: #e9edef;
+            border-top-left-radius: 2px;
+        }
+
+        .msg-time {
+            font-size: 10px;
+            color: #99beb7;
+            align-self: flex-end;
+            margin-top: 3px;
+        }
+
+        .msg-received .msg-time {
+            color: #8696a0;
+        }
+
+        .input-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            background-color: #202c33;
+            border-top: 1px solid #2a3942;
+            flex-shrink: 0;
+        }
+
+        .msg-input {
+            flex: 1;
+            background-color: #2a3942;
+            color: #e9edef;
+            border: none;
+            border-radius: 22px;
+            padding: 11px 16px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .msg-input::placeholder {
+            color: #8696a0;
+        }
+
+        .btn-send {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: none;
+            background-color: #00a884;
+            color: #0b141a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .btn-send svg {
+            width: 19px;
+            height: 19px;
+            fill: currentColor;
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="header">
+        <div class="brand">
+            <span class="brand-title">BLACKSTRINGS</span>
+            <span class="brand-sub" id="peerStatus">No peer connected</span>
+        </div>
+        <div class="tor-controls">
+            <div class="tor-badge" id="torBadge">
+                <span class="tor-dot"></span>
+                <span id="torStatusText">TOR OFF</span>
+            </div>
+            <button class="btn-tor" id="btnStartTor" onclick="connectTor()">START TOR</button>
+        </div>
+    </div>
+
+    <div class="onion-box">
+        <div class="my-onion-row">
+            <span class="onion-label">MY ONION</span>
+            <span class="my-onion-value" id="myOnionText">Start Tor to generate .onion</span>
+            <button class="btn-copy" onclick="copyMyOnion()">COPY</button>
+        </div>
+        <div class="friend-row">
+            <input
+                type="text"
+                id="friendOnionInput"
+                class="friend-input"
+                placeholder="Paste friend's .onion address..."
+                autocomplete="off"
+                autocapitalize="none"
+                spellcheck="false"
+            />
+            <button class="btn-connect" id="btnConnectFriend" onclick="connectFriend()">CONNECT TO FRIEND</button>
+        </div>
+    </div>
+
+    <div class="chat-area" id="chatArea">
+        <div class="system-msg">Tap START TOR to bootstrap Tor SOCKS5 (127.0.0.1:9050) and create your .onion hidden service.</div>
+    </div>
+
+    <div class="input-bar">
+        <input
+            type="text"
+            id="msgInput"
+            class="msg-input"
+            placeholder="Message over Tor..."
+            onkeydown="if (event.key === 'Enter') sendMsg();"
+        />
+        <button class="btn-send" onclick="sendMsg()" aria-label="Send">
+            <svg viewBox="0 0 24 24">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<script>
+    let currentMyOnion = "";
+
+    function getTimeString() {
+        const now = new Date();
+        return now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function appendSystemMessage(text, isError = false) {
+        const chatArea = document.getElementById("chatArea");
+        const div = document.createElement("div");
+        div.className = isError ? "system-msg error" : "system-msg";
+        div.textContent = text;
+        chatArea.appendChild(div);
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    function appendChatBubble(text, type) {
+        const chatArea = document.getElementById("chatArea");
+        const bubble = document.createElement("div");
+        bubble.className = "msg-bubble " + (type === "sent" ? "msg-sent" : "msg-received");
+
+        const body = document.createElement("span");
+        body.textContent = text;
+
+        const time = document.createElement("span");
+        time.className = "msg-time";
+        time.textContent = getTimeString();
+
+        bubble.appendChild(body);
+        bubble.appendChild(time);
+        chatArea.appendChild(bubble);
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    function connectTor() {
+        const badge = document.getElementById("torBadge");
+        const statusText = document.getElementById("torStatusText");
+        const btn = document.getElementById("btnStartTor");
+
+        badge.className = "tor-badge connecting";
+        statusText.textContent = "BOOTSTRAPPING";
+        btn.disabled = true;
+        appendSystemMessage("Starting Tor daemon & bootstrapping circuits...");
+
+        if (window.Android && typeof window.Android.startTor === "function") {
+            window.Android.startTor();
+        } else {
+            onError("Android bridge unavailable");
+        }
+    }
+
+    function connectFriend() {
+        const input = document.getElementById("friendOnionInput");
+        const onion = input.value.trim();
+        if (!onion) {
+            onError("Enter friend's .onion address first");
+            return;
+        }
+        const btn = document.getElementById("btnConnectFriend");
+        btn.disabled = true;
+        appendSystemMessage("Connecting via SOCKS5 127.0.0.1:9050 to " + onion + "...");
+
+        if (window.Android && typeof window.Android.connectToPeer === "function") {
+            window.Android.connectToPeer(onion);
+        } else {
+            onError("Android bridge unavailable");
+        }
+    }
+
+    function sendMsg() {
+        const input = document.getElementById("msgInput");
+        const text = input.value.trim();
+        if (!text) return;
+
+        input.value = "";
+        if (window.Android && typeof window.Android.sendMessage === "function") {
+            window.Android.sendMessage(text);
+        } else {
+            onError("Android bridge unavailable");
+        }
+    }
+
+    function copyMyOnion() {
+        if (!currentMyOnion) {
+            onError("No .onion address generated yet");
+            return;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(currentMyOnion).then(() => {
+                appendSystemMessage("Copied your .onion address");
+            }).catch(() => {
+                appendSystemMessage("Your .onion: " + currentMyOnion);
+            });
+        } else {
+            appendSystemMessage("Your .onion: " + currentMyOnion);
+        }
+    }
+
+    function onTorConnected(myOnion) {
+        currentMyOnion = myOnion;
+        const badge = document.getElementById("torBadge");
+        const statusText = document.getElementById("torStatusText");
+        const btn = document.getElementById("btnStartTor");
+        const onionEl = document.getElementById("myOnionText");
+
+        badge.className = "tor-badge connected";
+        statusText.textContent = "TOR ON";
+        btn.textContent = "ONLINE";
+        btn.disabled = true;
+        onionEl.textContent = myOnion;
+        appendSystemMessage("Tor connected. Listening on " + myOnion);
+    }
+
+    function onPeerConnected(onion) {
+        const btn = document.getElementById("btnConnectFriend");
+        const peerStatus = document.getElementById("peerStatus");
+        btn.disabled = false;
+        peerStatus.textContent = "Connected: " + onion;
+        appendSystemMessage("Encrypted Tor circuit established with " + onion);
+    }
+
+    function onMessageReceived(text) {
+        appendChatBubble(text, "received");
+    }
+
+    function onMessageSent(text) {
+        appendChatBubble(text, "sent");
+    }
+
+    function onError(err) {
+        document.getElementById("btnConnectFriend").disabled = false;
+        const btnTor = document.getElementById("btnStartTor");
+        if (!currentMyOnion) {
+            btnTor.disabled = false;
+            document.getElementById("torBadge").className = "tor-badge";
+            document.getElementById("torStatusText").textContent = "TOR OFF";
+        }
+        appendSystemMessage("Error: " + err, true);
+    }
+</script>
+</body>
+</html>
